@@ -1,0 +1,78 @@
+Catalyst::Model::Proxy(U3s)er Contributed Perl DocumentatCiaotnalyst::Model::Proxy(3)
+
+
+
+NNAAMMEE
+       Catalyst::Model::Proxy - Proxy Model Class
+
+SSYYNNOOPPSSIISS
+               # a sample use with C<Catalyst::Model::DBI>
+
+               # lib/MyApp/Model/DBI.pm
+               package MyApp::Model::DBI;
+
+               use base 'Catalyst::Model::DBI';
+
+               __PACKAGE__->config(
+                       dsn           => 'dbi:Pg:dbname=myapp',
+                       password      => '',
+                       user          => 'postgres',
+                       options       => { AutoCommit => 1 },
+               );
+
+               1;
+
+               # lib/MyApp/Model/Other.pm
+               package MyApp::Model::Other;
+
+               use base 'Catalyst::Model::Proxy';
+
+               __PACKAGE__->config(
+                       target_class => 'DBI'
+               );
+
+               # get access to shared $dbh via proxy mechanism
+               sub something {
+                       my $self = shift;
+                       my $dbh = $self->dbh;
+                       # ... do some stuff with $dbh
+               }
+
+               # back in the controller
+
+               # lib/MyApp/Controller/Other.pm
+               package MyApp::Controller::Other;
+
+               use base 'Catalyst::Controller';
+
+               my $model = $c->model('Other');
+               $model->something;
+
+DDEESSCCRRIIPPTTIIOONN
+       This is the Catalyst Model Class called "Catalyst::Model::Proxy" that
+       implements Proxy Design Pattern. It enables you to make calls to target
+       classes/subroutines via proxy mechanism. This means reduced memory
+       footprint because any operations performed on the proxies are forwarded
+       to the original complex ( target_class ) object. For more information
+       on the proxy design pattern refer to:
+       http://en.wikipedia.org/wiki/Proxy_design_pattern
+
+MMEETTHHOODDSS
+       new Initializes DBI connection
+
+       $self->target_class
+           Returns the current target class for a proxy.
+
+SSEEEE AALLSSOO
+       Catalyst
+
+AAUUTTHHOORR
+       Alex Pavlovic, "alex.pavlovic@taskforce-1.com"
+
+CCOOPPYYRRIIGGHHTT
+       This program is free software, you can redistribute it and/or modify it
+       under the same terms as Perl itself.
+
+
+
+perl v5.8.8                       2006-05-25         Catalyst::Model::Proxy(3)
