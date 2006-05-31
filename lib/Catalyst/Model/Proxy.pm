@@ -4,10 +4,7 @@ use strict;
 use base 'Catalyst::Model';
 use NEXT;
 
-our $VERSION = '0.01';
-our $AUTOLOAD;
-
-__PACKAGE__->mk_accessors('target_class');
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -15,12 +12,12 @@ Catalyst::Model::Proxy - Proxy Model Class
 
 =head1 SYNOPSIS
 
-	# a sample use with C<Catalyst::Model::DBI>
+	# a sample use with C<Catalyst::Model::DBI::SQL::Library>
 
-	# lib/MyApp/Model/DBI.pm
-	package MyApp::Model::DBI;
+	# lib/MyApp/Model/DBI/SQL/Library/MyDB.pm
+	package MyApp::Model::DBI::SQL::Library::MyDB;
 	
-	use base 'Catalyst::Model::DBI';
+	use base 'Catalyst::Model::DBI::SQL::Library';
 	
 	__PACKAGE__->config(
 		dsn           => 'dbi:Pg:dbname=myapp',
@@ -37,14 +34,18 @@ Catalyst::Model::Proxy - Proxy Model Class
 	use base 'Catalyst::Model::Proxy';
 	
 	__PACKAGE__->config(
-		target_class => 'DBI'
+		target_class => 'DBI::SQL::Library::MyDB',
+		subroutines => [ qw ( dbh load ) ] 
 	);
 	
-	# get access to shared $dbh via proxy mechanism
+	# get access to shared resources via proxy mechanism
 	sub something {
 		my $self = shift;
+		my $sql = $self->load('something.sql'); #located under root/sql
+		my $query = $sql->retr ( 'query' );	
 		my $dbh = $self->dbh;
 		# ... do some stuff with $dbh
+		$dbh->do ( $query );
 	}
 
 	# back in the controller
@@ -63,8 +64,9 @@ This is the Catalyst Model Class called C<Catalyst::Model::Proxy> that
 implements Proxy Design Pattern. It enables you to make calls to target
 classes/subroutines via proxy mechanism. This means reduced memory footprint
 because any operations performed on the proxies are forwarded to the 
-original complex ( target_class ) object. For more information on the proxy
-design pattern refer to: http://en.wikipedia.org/wiki/Proxy_design_pattern
+original complex ( target_class ) object. The target class model is also cached
+for increased performance. For more information on the proxy design pattern 
+please refer yourself to: http://en.wikipedia.org/wiki/Proxy_design_pattern
 
 =head1 METHODS
 
@@ -81,29 +83,18 @@ sub new {
 	$self = $self->NEXT::new($c);
 	$self->{namespace}               ||= ref $self;
 	$self->{additional_base_classes} ||= ();
-	$self->target_class( $self->{target_class} );
+	for my $sub ( @{$self->{subroutines}} ) {
+		no strict 'refs';
+		*{__PACKAGE__ . "::$sub"} = sub {
+			my $self = shift;
+			my $model = exists $self->{cached}{$self->{target_class}} ? 
+				$self->{cached}{$self->{target_class}} :
+				$c->model($self->{target_class});
+			return $model->$sub(@_);
+		}
+	}
 	return $self;
 }
-
-sub AUTOLOAD {
-	my $self = shift;
-	my $sub = $AUTOLOAD;
-	$sub =~ s/.*:://;
-	my $target_model = $self->{target_model};
-	return $target_model->$sub ( @_ ); 
-}
-
-sub ACCEPT_CONTEXT {
-	my ( $self, $c ) = @_;
-	$self->{target_model} = $c->model ( $self->target_class );
-	return $self;
-}
-
-=item $self->target_class
-
-Returns the current target class for a proxy.
-
-=back
 
 =head1 SEE ALSO
 

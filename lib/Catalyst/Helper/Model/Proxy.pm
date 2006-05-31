@@ -3,7 +3,7 @@ package Catalyst::Helper::Model::Proxy;
 use strict;
 use File::Spec;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -34,11 +34,12 @@ Makes tests for the Proxy Model.
 =cut
 
 sub mk_compclass {
-    my ( $self, $helper, $target_class ) = @_;
-    $helper->{target_class}  = $target_class  || '';
-    my $file = $helper->{file};
-    $helper->render_file( 'dbiclass', $file );
-    return 1;
+	my ( $self, $helper, $target_class, $subroutines ) = @_;
+	$helper->{target_class} = $target_class  || '';
+	$helper->{subroutines} = $subroutines || '';
+	my $file = $helper->{file};
+	$helper->render_file( 'dbiclass', $file );
+	return 1;
 }
 
 =head1 SEE ALSO
@@ -68,6 +69,7 @@ use base 'Catalyst::Model::Proxy';
 
 __PACKAGE__->config(
     target_class           => '[% target_class %]',
+    subroutines            => '[ [% subroutines %] ]'
 );
 
 =head1 NAME
