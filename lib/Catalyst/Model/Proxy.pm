@@ -4,7 +4,8 @@ use strict;
 use base 'Catalyst::Model';
 use NEXT;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
+our %CLASS_CACHE;
 
 =head1 NAME
 
@@ -84,13 +85,15 @@ sub new {
 	$self->{namespace}               ||= ref $self;
 	$self->{additional_base_classes} ||= ();
 	for my $sub ( @{$self->{subroutines}} ) {
-		no strict 'refs';
-		*{__PACKAGE__ . "::$sub"} = sub {
-			my $self = shift;
-			my $model = exists $self->{cached}{$self->{target_class}} ? 
-				$self->{cached}{$self->{target_class}} :
-				$c->model($self->{target_class});
-			return $model->$sub(@_);
+		my $target_class = $self->{target_class};
+		unless ( $CLASS_CACHE{$target_class}{$sub} ) {
+			$c->log->debug( "Installing sub:$sub from target_class:$target_class into proxy" ) if $c->debug;
+			$CLASS_CACHE{$target_class}{$sub} = 1;
+			no strict 'refs';
+			*{__PACKAGE__ . "::$sub"} = sub {
+				shift;
+				return $c->model($target_class)->$sub(@_);
+			}
 		}
 	}
 	return $self;

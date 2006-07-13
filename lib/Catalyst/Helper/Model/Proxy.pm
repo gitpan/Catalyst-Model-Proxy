@@ -3,7 +3,7 @@ package Catalyst::Helper::Model::Proxy;
 use strict;
 use File::Spec;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
