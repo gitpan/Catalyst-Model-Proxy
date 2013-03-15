@@ -1,11 +1,22 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         Catalyst-Model-Proxy
-version:      0.03
-version_from: lib/Catalyst/Model/Proxy.pm
-installdirs:  site
+---
+abstract: unknown
+author:
+  - 'Alex Pavlovic (alex.pavlovic@taskforce-1.com)'
+build_requires:
+  ExtUtils::MakeMaker: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+dynamic_config: 1
+generated_by: 'ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.112621'
+license: unknown
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Catalyst-Model-Proxy
+no_index:
+  directory:
+    - t
+    - inc
 requires:
-    Catalyst:                      5.00
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.30
+  Catalyst: 5.00
+version: 0.04

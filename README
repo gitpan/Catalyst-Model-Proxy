@@ -2,57 +2,57 @@ Catalyst::Model::Proxy(U3s)er Contributed Perl DocumentatCiaotnalyst::Mod
 
 
 
-NNAAMMEE
+[1mNAME[0m
        Catalyst::Model::Proxy - Proxy Model Class
 
-SSYYNNOOPPSSIISS
-               # a sample use with C<Catalyst::Model::DBI::SQL::Library>
+[1mSYNOPSIS[0m
+         # a sample use with C<Catalyst::Model::DBI::SQL::Library>
 
-               # lib/MyApp/Model/DBI/SQL/Library/MyDB.pm
-               package MyApp::Model::DBI::SQL::Library::MyDB;
+         # lib/MyApp/Model/DBI/SQL/Library/MyDB.pm
+         package MyApp::Model::DBI::SQL::Library::MyDB;
 
-               use base 'Catalyst::Model::DBI::SQL::Library';
+         use base 'Catalyst::Model::DBI::SQL::Library';
 
-               __PACKAGE__->config(
-                       dsn           => 'dbi:Pg:dbname=myapp',
-                       password      => '',
-                       user          => 'postgres',
-                       options       => { AutoCommit => 1 },
-               );
+         __PACKAGE__->config(
+           dsn           => 'dbi:Pg:dbname=myapp',
+           password      => '',
+           user          => 'postgres',
+           options       => { AutoCommit => 1 },
+         );
 
-               1;
+         1;
 
-               # lib/MyApp/Model/Other.pm
-               package MyApp::Model::Other;
+         # lib/MyApp/Model/Other.pm
+         package MyApp::Model::Other;
 
-               use base 'Catalyst::Model::Proxy';
+         use base 'Catalyst::Model::Proxy';
 
-               __PACKAGE__->config(
-                       target_class => 'DBI::SQL::Library::MyDB',
-                       subroutines => [ qw ( dbh load ) ]
-               );
+         __PACKAGE__->config(
+           target_class => 'DBI::SQL::Library::MyDB',
+           subroutines => [ qw ( dbh load ) ]
+         );
 
-               # get access to shared resources via proxy mechanism
-               sub something {
-                       my $self = shift;
-                       my $sql = $self->load('something.sql'); #located under root/sql
-                       my $query = $sql->retr ( 'query' );
-                       my $dbh = $self->dbh;
-                       # ... do some stuff with $dbh
-                       $dbh->do ( $query );
-               }
+         # get access to shared resources via proxy mechanism
+         sub something {
+           my $self = shift;
+           my $sql = $self->load('something.sql'); #located under root/sql
+           my $query = $sql->retr ( 'query' );
+           my $dbh = $self->dbh;
+           # ... do some stuff with $dbh
+           $dbh->do ( $query );
+         }
 
-               # back in the controller
+         # back in the controller
 
-               # lib/MyApp/Controller/Other.pm
-               package MyApp::Controller::Other;
+         # lib/MyApp/Controller/Other.pm
+         package MyApp::Controller::Other;
 
-               use base 'Catalyst::Controller';
+         use base 'Catalyst::Controller';
 
-               my $model = $c->model('Other');
-               $model->something;
+         my $model = $c->model('Other');
+         $model->something;
 
-DDEESSCCRRIIPPTTIIOONN
+[1mDESCRIPTION[0m
        This is the Catalyst Model Class called "Catalyst::Model::Proxy" that
        implements Proxy Design Pattern. It enables you to make calls to target
        classes/subroutines via proxy mechanism. This means reduced memory
@@ -62,19 +62,26 @@ DDEESSCCRRIIPPTTIIOONN
        proxy design pattern please refer yourself to:
        http://en.wikipedia.org/wiki/Proxy_design_pattern
 
-MMEETTHHOODDSS
+[1mMETHODS[0m
        new Initializes DBI connection
 
-SSEEEE AALLSSOO
+[1mSEE ALSO[0m
        Catalyst
 
-AAUUTTHHOORR
+[1mAUTHOR[0m
        Alex Pavlovic, "alex.pavlovic@taskforce-1.com"
 
-CCOOPPYYRRIIGGHHTT
+[1mCOPYRIGHT[0m
        This program is free software, you can redistribute it and/or modify it
        under the same terms as Perl itself.
 
+[1mPOD ERRORS[0m
+       Hey! [1mThe above document had some coding errors, which are explained[0m
+       [1mbelow:[0m
+
+       Around line 106:
+           You forgot a '=back' before '=head1'
 
 
-perl v5.8.8                       2006-05-31         Catalyst::Model::Proxy(3)
+
+perl v5.14.2                      2013-03-15         Catalyst::Model::Proxy(3)
